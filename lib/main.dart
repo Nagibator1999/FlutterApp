@@ -122,20 +122,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //создаём список описаний для сортировки
 
-  //!!!!!!!!
-  //пофиксить тут осталось много всякого хлама!!!!!!!!!!
-  //!!!!!!!!
-  //не уверен что это нужно
-  void namesForSort(List names) {
-    for (var i = 0; i < data.length; i++) {
-      names.add(data[i].descripton);
-    }
-    tmpList = names;
-  }
   //не знаю зачем это
   @override
   void initState() {
-    this.namesForSort(names);
     super.initState();
   }
   //убрать лишние переменные
@@ -152,7 +141,6 @@ class _MyHomePageState extends State<MyHomePage> {
       if (_filter.text.isEmpty) {
         setState(() {
           _searchText = "";
-          filteredNames = names;
         });
       } else {
         setState(() {
@@ -167,7 +155,9 @@ class _MyHomePageState extends State<MyHomePage> {
       if (this._searchIcon.icon == Icons.search) {
         this._searchIcon = new Icon(Icons.close);
         this._appBarTitle = new TextField(
-          style: new TextStyle(color: Colors.white),
+          style: new TextStyle(
+            color: Colors.white
+            ),
           cursorColor: Colors.white,
           controller: _filter,
           decoration: new InputDecoration(
@@ -175,19 +165,24 @@ class _MyHomePageState extends State<MyHomePage> {
               color: Colors.white,
             ),
             hintText: 'Search',
-            hintStyle: TextStyle(fontSize: 20.0, color: Colors.white),
+            hintStyle: TextStyle(fontSize: 20.0, 
+              color: Colors.white
+              ),
             enabledBorder: UnderlineInputBorder(      
-              borderSide: BorderSide(color: Colors.white),   
+              borderSide: BorderSide(
+                color: Colors.white
+              ),   
             ),  
             focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: Colors.white),
+              borderSide: BorderSide(
+                color: Colors.white
+              ),
             ),  
           ),
         );
       } else {
         this._searchIcon = new Icon(Icons.search);
         this._appBarTitle = new Text( 'Password Keeper' );
-        filteredNames = names;
         _filter.clear();
       }
     });
@@ -203,8 +198,6 @@ class _MyHomePageState extends State<MyHomePage> {
         if (data[i].descripton.toLowerCase().contains(_searchText.toLowerCase())) {
           tmpList.add(data[i]);
           int tmpIndex = tmpList.lastIndexOf(data[i]);
-          print(tmpIndex);
-          print(i);
           tmpList[tmpIndex].indexOfObject = i;
         }
       }
@@ -287,36 +280,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: Container(
-        child: _buildList(), //ListView(
-        //   scrollDirection: Axis.vertical,
-        //   // генерируем список listtile 
-        //   children: new List.generate(data.length, (int index){
-        //     return new ListTile(
-        //       title: Text(data[index].descripton,
-        //         maxLines: 1,
-        //         style: TextStyle(
-        //           fontSize: 20,
-        //         ),
-        //       ),
-        //       leading: CircleAvatar(child: Text(data[index].descripton[0].toUpperCase())),
-        //       onTap: () {
-        //         tapIndex = index;
-        //         // устанавливаем значение для внешних переменных чтобы потом
-        //         // можно было обратиться из класса YourNewPage
-        //         descriptionForNewPage = data[tapIndex].descripton;
-        //         loginForNewPage = data[tapIndex].login;
-        //         passwordForNewPage = data[tapIndex].password;
-
-        //         Navigator.push(
-        //           context,
-        //             MaterialPageRoute(
-        //               builder: (context) => YourNewPage(),
-        //           ),
-        //         ); 
-        //       },
-        //     );
-        //   }),
-        // ),
+        child: _buildList(),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _displayDialog(context),
