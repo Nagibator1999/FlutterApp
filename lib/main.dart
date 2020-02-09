@@ -10,7 +10,8 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.red,
+        brightness: Brightness.light,
+        primarySwatch: Colors.lightBlue,
       ),
       home: MyHomePage(),
     );
@@ -134,6 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List tmpList = new List();
   List filteredNames = new List();
   Icon _searchIcon = new Icon(Icons.search);
+  Color appBarTextColor = Colors.white;
   Widget _appBarTitle = new Text( 'Password Keeper' );
   //штука которая постоянно сканит textfield в appbar е
   _MyHomePageState() {
@@ -156,28 +158,20 @@ class _MyHomePageState extends State<MyHomePage> {
         this._searchIcon = new Icon(Icons.close);
         this._appBarTitle = new TextField(
           style: new TextStyle(
-            color: Colors.white
-            ),
-          cursorColor: Colors.white,
+            fontSize: 20.0,
+            color: Theme.of(context).primaryTextTheme.title.color,
+           ),
+          cursorColor: Theme.of(context).primaryTextTheme.title.color,
           controller: _filter,
           decoration: new InputDecoration(
+            border: InputBorder.none,
             prefixIcon: new Icon(Icons.search,
-              color: Colors.white,
+              color: Theme.of(context).primaryTextTheme.title.color,
             ),
-            hintText: 'Search',
+            hintText: ' Search',
             hintStyle: TextStyle(fontSize: 20.0, 
-              color: Colors.white
-              ),
-            enabledBorder: UnderlineInputBorder(      
-              borderSide: BorderSide(
-                color: Colors.white
-              ),   
-            ),  
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-                color: Colors.white
-              ),
-            ),  
+              color: Theme.of(context).primaryTextTheme.title.color,
+            ), 
           ),
         );
       } else {
