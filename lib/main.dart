@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.light,
-        primarySwatch: Colors.lightBlue,
+        primarySwatch: Colors.teal,
       ),
       home: MyHomePage(),
     );
@@ -135,7 +135,6 @@ class _MyHomePageState extends State<MyHomePage> {
   List tmpList = new List();
   List filteredNames = new List();
   Icon _searchIcon = new Icon(Icons.search);
-  Color appBarTextColor = Colors.white;
   Widget _appBarTitle = new Text( 'Password Keeper' );
   //штука которая постоянно сканит textfield в appbar е
   _MyHomePageState() {
@@ -157,6 +156,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (this._searchIcon.icon == Icons.search) {
         this._searchIcon = new Icon(Icons.close);
         this._appBarTitle = new TextField(
+          autofocus: true,
           style: new TextStyle(
             fontSize: 20.0,
             color: Theme.of(context).primaryTextTheme.title.color,
