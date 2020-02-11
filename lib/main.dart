@@ -8,12 +8,72 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      initialRoute: '/',
+      routes: {
+        '/': (context) => CheckPassword(),
+        '/mainPage': (context) => MyHomePage(),
+      },
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.light,
         primarySwatch: Colors.teal,
       ),
-      home: MyHomePage(),
+      //home: MyHomePage(),
+    );
+  }
+}
+
+class CheckPassword extends StatefulWidget {
+  @override
+  _CheckPasswordState createState() => _CheckPasswordState();
+}
+
+class _CheckPasswordState extends State<CheckPassword> {
+  TextEditingController _passController = TextEditingController();
+  String hintTextForTextField = 'Enter password';
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Gate"),
+      ),
+      body: Center(
+        child: Container(
+          margin: EdgeInsets.only(top: 200),
+          width: MediaQuery.of(context).size.width/2,
+          alignment: Alignment.center,
+          child: Column(
+            children: <Widget>[
+              TextField(
+                obscureText: true,
+                textAlign: TextAlign.center,
+                //хз почему но он ругается на автофокус
+                //autofocus: true,
+                keyboardType: TextInputType.number,
+                controller: _passController,
+                decoration: InputDecoration(
+                  hintText: hintTextForTextField,
+                ),
+              ),
+              FlatButton(
+                // тут такой навигатор потому что если использовать pushnamed()
+                // то на mainPage остаётся кнопка back на appbar е.
+                onPressed: () {
+                  if (_passController.text == '1111') {
+                    Navigator.pushReplacementNamed(context, '/mainPage');
+                  } else {
+                    hintTextForTextField = 'Wrong password';
+                    _passController.clear();
+                    setState(() {});
+                  }
+                }, 
+                child: Text("Enter"),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -115,11 +175,6 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       );
   }
-
-
-
-
-
 
   //создаём список описаний для сортировки
 
@@ -285,16 +340,8 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 
-
-
-
-
-
-
 // страница на которую мы переходим для просмотра пароля и так далее
-// !!!!! надо сделать её stateful !!!!! 
 class YourNewPage extends StatefulWidget {
-
   @override
   _YourNewPageState createState() => _YourNewPageState();
 }
@@ -408,7 +455,7 @@ class _YourNewPageState extends State<YourNewPage> {
                 _displayEditDialog(context, value, addString);
               } else if (value == 5) {
                 _displayConfirmDeleteDialog(context);
-                data.removeAt(tapIndex);
+                // data.removeAt(tapIndex);
               } 
             },
             itemBuilder: (context) => [
@@ -531,10 +578,8 @@ class _YourNewPageState extends State<YourNewPage> {
       // Кнопка для удаления записи
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // что бы было вообще по красоте нужно добавить
-          // alertDialog с подтверждением 
           _displayConfirmDeleteDialog(context);
-          data.removeAt(tapIndex);
+          //data.removeAt(tapIndex);
         },
         child: Icon(Icons.delete),
       ),
@@ -551,6 +596,7 @@ class _YourNewPageState extends State<YourNewPage> {
               new FlatButton(
                 onPressed: () {
                   Navigator.of(context).popUntil((route) => route.isFirst);
+                  data.removeAt(tapIndex);
                 },
                 child: Text('SUBMIT')),
               new FlatButton(
