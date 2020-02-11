@@ -598,7 +598,7 @@ class _YourNewPageState extends State<YourNewPage> {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                   data.removeAt(tapIndex);
                 },
-                child: Text('SUBMIT')),
+                child: Text('DELETE')),
               new FlatButton(
                 child: new Text('CANCEL'),
                 onPressed: () {
