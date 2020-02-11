@@ -139,7 +139,7 @@ class _MyHomePageState extends State<MyHomePage> {
           return AlertDialog(
             title: Text('Create Note'),
             content: Container(
-              height: 170,
+              height: MediaQuery.of(context).size.height/4,
               child: Column(
                 children: <Widget>[
                   Container(
