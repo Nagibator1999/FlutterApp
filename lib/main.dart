@@ -23,6 +23,8 @@ class MyApp extends StatelessWidget {
   }
 }
 
+//попробуем немного засейвить в базу данных
+
 class CheckPassword extends StatefulWidget {
   @override
   _CheckPasswordState createState() => _CheckPasswordState();
