@@ -1,132 +1,117 @@
+import 'dart:io';
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:convert';
 
-void dataBase() async {
-  final database = openDatabase(
-    // Set the path to the database. Note: Using the `join` function from the
-    // `path` package is best practice to ensure the path is correctly
-    // constructed for each platform.
-    join(await getDatabasesPath(), 'note_database.db'),
-    // When the database is first created, create a table to store dogs.
-    onCreate: (db, version) {
-      return db.execute(
-        "CREATE TABLE notes(with their all fields)",
-      );
-    },
-    // Set the version. This executes the onCreate function and provides a
-    // path to perform database upgrades and downgrades.
-    version: 1,
-  );
+Note noteFromJson(String str) {
+  final jsonData = json.decode(str);
+  return Note.fromMap(jsonData);
+}
 
-  Future<void> insertNote(Note note) async {
-    // Get a reference to the database.
-    final Database db = await database;
-
-    // Insert the Dog into the correct table. Also specify the
-    // `conflictAlgorithm`. In this case, if the same dog is inserted
-    // multiple times, it replaces the previous data.
-    await db.insert(
-      'notes',
-      note.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
-  }
-
-  Future<List<Note>> notes() async {
-    // Get a reference to the database.
-    final Database db = await database;
-
-    // Query the table for all The Dogs.
-    final List<Map<String, dynamic>> maps = await db.query('notes');
-
-    // Convert the List<Map<String, dynamic> into a List<Dog>.
-    return List.generate(maps.length, (i) {
-      return Note(
-        indexOfObject: maps[i]['indexOfObject'],
-        descripton: maps[i]['descripton'],
-        login: maps[i]['login'],
-        password: maps[i]['password'],
-        additionalInformation: maps[i]['additionalInformation'],
-      );
-    });
-  }
-
-  Future<void> updateNote(Note note) async {
-    // Get a reference to the database.
-    final db = await database;
-
-    // Update the given Dog.
-    await db.update(
-      'note',
-      note.toMap(),
-      // Ensure that the Dog has a matching id.
-      where: "id = ?",
-      // Pass the Dog's id as a whereArg to prevent SQL injection.
-      whereArgs: [note.indexOfObject],
-    );
-  }
-
-  Future<void> deleteNote(int indexOfObject) async {
-    // Get a reference to the database.
-    final db = await database;
-
-    // Remove the Dog from the database.
-    await db.delete(
-      'note',
-      // Use a `where` clause to delete a specific dog.
-      where: "id = ?",
-      // Pass the Dog's id as a whereArg to prevent SQL injection.
-      whereArgs: [indexOfObject],
-    );
-  }
-
-  // var fido = Dog(
-  //   id: 0,
-  //   name: 'Fido',
-  //   age: 35,
-  // );
-
-  // // Insert a dog into the database.
-  // await insertDog(fido);
-
-  // // Print the list of dogs (only Fido for now).
-  // print(await dogs());
-
-  // // Update Fido's age and save it to the database.
-  // fido = Dog(
-  //   id: fido.id,
-  //   name: fido.name,
-  //   age: fido.age + 7,
-  // );
-  // await updateDog(fido);
-
-  // // Print Fido's updated information.
-  // print(await dogs());
-
-  // // Delete Fido from the database.
-  // await deleteDog(fido.id);
-
-  // // Print the list of dogs (empty).
-  // print(await dogs());
+String noteToJson(Note data) {
+  final dyn = data.toMap();
+  return json.encode(dyn);
 }
 
 class Note {
+  int id;
   int indexOfObject;
   String descripton;
   String login;
   String password;
   String additionalInformation;
 
-  Note({this.indexOfObject, this.descripton, this.login, this.password, this.additionalInformation});
+  Note({this.id, indexOfObject, descripton, login, password, additionalInformation});
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': indexOfObject,
+  Map<String, dynamic> toMap() => {
+      'id': id,
+      'indexOfObject': indexOfObject,
       'descripton': descripton,
       'login': login,
       'password': password,
       'additionalInformation': additionalInformation,
-    };
+  };
+  
+  factory Note.fromMap(Map<String, dynamic> json) => new Note(
+        id: json["id"],
+        indexOfObject: json["indexOfObject"],
+        descripton: json["descripton"],
+        login: json["login"],
+        password: json["password"],
+        additionalInformation: json["additionalInformation"],
+      );
+}
+
+
+
+class DBProvider {
+  DBProvider._();
+
+  static final DBProvider db = DBProvider._();
+
+  Database _database;
+
+  Future<Database> get database async {
+    if (_database != null) return _database;
+    // if _database is null we instantiate it
+    _database = await initDB();
+    return _database;
+  }
+
+  initDB() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, "NoteDB.db");
+    return await openDatabase(path, version: 1, onOpen: (db) {},
+        onCreate: (Database db, int version) async {
+      await db.execute("CREATE TABLE Notes ("
+          "id INTEGER PRIMARY KEY,"
+          "indexOfObject INTEGER,"
+          "descripton TEXT,"
+          "login TEXT,"
+          "password TEXT,"
+          "additionalInformation TEXT"
+          ")");
+    });
+  }
+
+  newNote(Note newNote) async {
+    final db = await database;
+    //get the biggest id in the table
+    var table = await db.rawQuery("SELECT MAX(id)+1 as id FROM Note");
+    int id = table.first["id"];
+    //insert to the table using the new id
+    var raw = await db.rawInsert(
+        "INSERT Into Note (id,indexOfObject,descripton,login,password,additionalInformation)"
+        " VALUES (?,?,?,?,?,?)",
+        [id, newNote.indexOfObject, newNote.descripton, newNote.login, newNote.password, newNote.additionalInformation]);
+    return raw;
+  }
+
+  updateNote(Note newNote) async {
+    final db = await database;
+    var res = await db.update("Note", newNote.toMap(),
+        where: "id = ?", whereArgs: [newNote.id]);
+    return res;
+  }
+
+  getNote(int id) async {
+    final db = await database;
+    var res = await db.query("Note", where: "id = ?", whereArgs: [id]);
+    return res.isNotEmpty ? Note.fromMap(res.first) : null;
+  }
+
+  Future<List<Note>> getAllNotes() async {
+    final db = await database;
+    var res = await db.query("Note");
+    List<Note> list =
+        res.isNotEmpty ? res.map((c) => Note.fromMap(c)).toList() : [];
+    return list;
+  }
+
+  deleteNote(int id) async {
+    final db = await database;
+    return db.delete("Note", where: "id = ?", whereArgs: [id]);
   }
 }

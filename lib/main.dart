@@ -23,6 +23,16 @@ class MyApp extends StatelessWidget {
   }
 }
 
+//глобальные переменные для отображения данных на YourNewPage
+String descriptionForNewPage;
+String loginForNewPage;
+String passwordForNewPage;
+
+String editNoteInformation;
+
+List<Note> data = [];
+int tapIndex; 
+
 //попробуем немного засейвить в базу данных
 
 class CheckPassword extends StatefulWidget {
@@ -33,6 +43,8 @@ class CheckPassword extends StatefulWidget {
 class _CheckPasswordState extends State<CheckPassword> {
   TextEditingController _passController = TextEditingController();
   String hintTextForTextField = 'Enter password';
+  //траблы: говорит то не создана какая-то таблица
+  //Future<List<Note>> data = DBProvider.db.getAllNotes(); 
 
   @override
   Widget build(BuildContext context) {
@@ -88,15 +100,6 @@ class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
-//глобальные переменные для отображения данных на YourNewPage
-String descriptionForNewPage;
-String loginForNewPage;
-String passwordForNewPage;
-
-String editNoteInformation;
-
-List<Note> data = [];
-int tapIndex; 
 
 class _MyHomePageState extends State<MyHomePage> {
 
@@ -116,13 +119,15 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
   // функция создаёт новый элемент массива Note по которому создаётся новый ListTile
-  void getValueAndCreateListTile() {
+  Future<void> getValueAndCreateListTile() async {
     descripton = _textFieldControllerDescription.text;
     login = _textFieldControllerLogin.text;
     password = _textFieldControllerPassword.text;
     
     if (descripton != '' && login != '' && password != '') {
-      data.add(Note(descripton: descripton, login: login, password: password));
+      Note tmp = Note(descripton: descripton, login: login, password: password);
+      data.add(tmp);
+      //await DBProvider.db.newNote(tmp);
 
       Navigator.of(context).pop();
 
